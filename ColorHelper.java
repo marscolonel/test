@@ -1,7 +1,10 @@
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import java.util.HashSet;
+import java.util.Set;
+
 public class ColorHelper{
-	/**
+		/**
 	 * 计算bitmap的RGB值,取RGB平均值
 	 * 
 	 * @param mBitmap
@@ -47,5 +50,51 @@ public class ColorHelper{
 			e.printStackTrace();
 			return Color.WHITE;
 		}
+	}
+
+
+	/**
+	 * 计算bitmap的RGB值,根据endSize大小返回RGB数组 mBitmap:传入需要计算的bitmap;endSize:返回多少位行素值
+	 * ranArr:返回一个RGB数组
+	 * 
+	 * @param mBitmap
+	 * @param endSize
+	 * @return ranArr
+	 */
+	public static Integer[] bitmapGetPiexs(Bitmap mBitmap, int endSize) {
+		int picw = mBitmap.getWidth();
+		int pich = mBitmap.getHeight();
+		int color = 0;
+		Integer[] ranArr;
+		Set<Integer> set = new HashSet<Integer>();
+
+		int i = 0;
+		while ((i < picw) && (i < pich)) {
+
+			int value = mBitmap.getPixel(i, i);
+			if (value != 0) {
+				int R = (value >> 16) & 0xff;
+				int G = (value >> 8) & 0xff;
+				int B = value & 0xff;
+				color = Color.rgb(R, G, B);
+				set.add(color);// 存入不重复的color值
+				Log.i("Pixel Value", "pixel: " + Color.rgb(R, G, B));
+
+			}
+			i++;
+		}
+		int size = set.size();
+		if (size < endSize) {
+			int differSize = endSize - set.size();
+			size += differSize;
+
+			for (int j = 1; j < differSize + 1; j++) {
+				set.add(color + j);
+			}
+		}
+		ranArr = new Integer[size];
+		ranArr = set.toArray(new Integer[size]);
+		set.clear();
+		return ranArr;
 	}
 }
